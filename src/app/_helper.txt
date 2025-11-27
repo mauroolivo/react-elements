@@ -1,0 +1,30 @@
+npm i -D prettier
+npm i -D eslint-config-prettier
+
+> eslint.config.js
+
+import prettier from "eslint-config-prettier"
+
+...,
+prettier
+
+> .prettierrc.json
+
+{
+    "semi": true,
+    "printWidth": 80,
+    "tabWidth": 2,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "endOfLine": "auto"
+}
+
+######### Tailwind:
+
+npm i -D prettier-plugin-tailwindcss
+
+
+> .prettierrc.json
+{ ....
+    "plugins": ["prettier-plugin-tailwindcss"]
+}
