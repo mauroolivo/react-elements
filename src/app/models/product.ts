@@ -33,18 +33,18 @@ const ProductSchema = z.object({
   discountPercentage: z.number(),
   rating: z.number(),
   stock: z.number(),
-  tags: z.array(z.string()),
+  tags: z.array(z.string()).optional(),
   brand: z.string().optional(),
-  sku: z.string(),
-  weight: z.number(),
-  dimensions: DimensionsSchema,
-  warrantyInformation: z.string(),
-  shippingInformation: z.string(),
-  availabilityStatus: z.string(),
-  reviews: z.array(ReviewSchema),
-  returnPolicy: z.string(),
-  minimumOrderQuantity: z.number(),
-  meta: MetaSchema,
+  sku: z.string().optional(),
+  weight: z.number().optional(),
+  dimensions: DimensionsSchema.optional(),
+  warrantyInformation: z.string().optional(),
+  shippingInformation: z.string().optional(),
+  availabilityStatus: z.string().optional(),
+  reviews: z.array(ReviewSchema).optional(),
+  returnPolicy: z.string().optional(),
+  minimumOrderQuantity: z.number().optional(),
+  meta: MetaSchema.optional(),
   images: z.array(z.string()),
   thumbnail: z.string(),
 });
@@ -58,5 +58,8 @@ const ProductsResponseSchema = z.object({
 });
 type ProductsResponse = z.infer<typeof ProductsResponseSchema>;
 
-export { ProductSchema, ProductsResponseSchema };
-export type { Product, ProductsResponse };
+const CategoriesResponseSchema = z.array(z.string());
+type CategoriesResponse = z.infer<typeof CategoriesResponseSchema>;
+
+export { ProductSchema, ProductsResponseSchema, CategoriesResponseSchema };
+export type { Product, ProductsResponse, CategoriesResponse };
