@@ -1,9 +1,8 @@
 import { Suspense } from 'react';
-import ProductList from '@/app/components/ProductList';
-import Loader from '@/app/components/Loader';
+import ProductList from '@/components/ProductList';
+import Loader from '@/components/Loader';
 
 export default async function Page() {
-  
   return (
     <Suspense fallback={<Loader />}>
       <ProductList />

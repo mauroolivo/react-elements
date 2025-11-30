@@ -1,8 +1,8 @@
-'use client';
-import { CategoriesResponse } from '@/app/models/product';
-import { getCategories } from '@/app/api/api';
-import { use, useState } from 'react';
-import { fa } from 'zod/locales';
+"use client";
+import { CategoriesResponse } from "@/models/product";
+import { getCategories } from "@/server/server";
+import { use, useState } from "react";
+import { fa } from "zod/locales";
 
 export default function CategoryList({
   categoriesPromise,
@@ -17,7 +17,7 @@ export default function CategoryList({
         className="m-0 rounded-xl bg-gray-700 p-2"
         onClick={() => setShow(!show)}
       >
-        {show ? 'Hide Categories' : 'Show Categories'}
+        {show ? "Hide Categories" : "Show Categories"}
       </button>
       {show &&
         categories.map((category) => (

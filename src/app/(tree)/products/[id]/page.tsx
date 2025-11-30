@@ -1,5 +1,5 @@
-import ErrorProduct from '@/app/components/ErrorProduct';
-import ProductDetail from '@/app/components/ProductDetail';
+import ErrorProduct from '@/components/ErrorProduct';
+import ProductDetail from '@/components/ProductDetail';
 import { ErrorBoundary } from 'react-error-boundary';
 
 export default async function Page({

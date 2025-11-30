@@ -1,9 +1,9 @@
-import { ProductsResponse } from '@/app/models/product';
-import { getCategories, getProducts } from '@/app/api/api';
-import Link from 'next/link';
+import { ProductsResponse } from "@/models/product";
+import { getCategories, getProducts } from "@/server/server";
+import Link from "next/link";
 
-import CategoryList from './CategoryList';
-import { Suspense } from 'react';
+import CategoryList from "./CategoryList";
+import { Suspense } from "react";
 
 export default async function ProductList() {
   const data: ProductsResponse = await getProducts();

@@ -1,0 +1,27 @@
+api.ts
+
+fetch promises with zod validated schemas in
+- products
+- categories
+- recipes
+
+
+- product list, product detail, server functions in server component
+
+- product update: client component using server function
+
+- categories: promise created in server consumed in client with "use"
+  concept of caching the promise https://www.youtube.com/watch?v=UUW4xS05Y6s
+
+- recipes: @tanstack useQuery calls server functions from client
+
+- posts: used route handler in api/posts/route.ts with @tanstack useQuery from client
+
+Route Handlers are generally preferred to Server Functions for data fetching. This is because
+they improve performance by allowing parallel api requests
+
+TODO:
+
+- create db for 2 new entities
+- fetch tanstack, SWR
+- mutate via tanstack, SWR

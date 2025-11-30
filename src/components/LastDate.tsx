@@ -1,12 +1,12 @@
-'use client';
-import { useEffect } from 'react';
-import useLocalStorage from '../hooks/useLocalStorage';
+"use client";
+import { useEffect } from "react";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 export default function LastDate() {
-  const { setItem, getItem, removeItem } = useLocalStorage('value');
+  const { setItem, getItem, removeItem } = useLocalStorage("value");
 
   useEffect(() => {
-    console.log('Current local storage item:', getItem());
+    console.log("Current local storage item:", getItem());
   }, [getItem]);
 
   return (
@@ -21,7 +21,7 @@ export default function LastDate() {
         className="ml-4 rounded-lg bg-green-500 px-4 py-2 font-mono text-white hover:bg-green-600"
         onClick={() => {
           const item = getItem();
-          console.log('Retrieved local storage item:', item);
+          console.log("Retrieved local storage item:", item);
         }}
       >
         Get Local Storage Item
