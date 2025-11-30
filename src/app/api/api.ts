@@ -1,3 +1,4 @@
+'use server';
 import {
   ProductsResponse,
   Product,
@@ -5,6 +6,7 @@ import {
   CategoriesResponseSchema,
 } from '@/app/models/product';
 import { ProductsResponseSchema, ProductSchema } from '@/app/models/product';
+import { RecipesResponse, RecipesResponseSchema } from '../models/recipes';
 
 const DELAY = 1000;
 export async function getProducts(): Promise<ProductsResponse> {
@@ -35,4 +37,9 @@ export async function getCategories(): Promise<CategoriesResponse> {
   const res = await fetch(`https://dummyjson.com/products/category-list?delay=${5000}`);
   const data: string[] = await res.json();
   return CategoriesResponseSchema.parse(data);
+}
+export async function getRecipes(): Promise<RecipesResponse> {
+    const res = await fetch(`https://dummyjson.com/recipes?delay=${DELAY}`);
+    const data: RecipesResponse = await res.json();
+    return RecipesResponseSchema.parse(data);
 }
