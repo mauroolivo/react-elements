@@ -9,7 +9,7 @@ import {
 } from "@/models/product";
 import { ProductsResponseSchema, ProductSchema } from "@/models/product";
 import { RecipesResponse, RecipesResponseSchema } from "../models/recipes";
-import { Post, PostsResponse, PostsResponseSchema } from "@/models/post";
+import { PostsResponse, PostsResponseSchema } from "@/models/post";
 
 const DELAY = 1000;
 export async function getProducts(): Promise<ProductsResponse> {
