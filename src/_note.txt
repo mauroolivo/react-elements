@@ -24,9 +24,5 @@ movies db:
 - listMovies via route handler, fetch with @tanstack useQuery from client
 - create movie: used server functions (not route handler). Note: queris.ts require
   'use server' for this to work!
-
-TODO:
-- fetch with SWR
-- mutate with SWR
-
-- multiple calls
+- listMoviewsSWR, useSWR in client, with routeHandler api
+- NewMovieSWR, swr mutate
