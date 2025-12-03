@@ -5,7 +5,7 @@ import { MoviesSchema } from "@/models/movie";
 
 export async function listMovies(): Promise<Movie[]> {
   const client = createClient({
-    url: process.env.DB_URL ?? "",
+    url: process.env.DB_URL_MOVIES ?? "",
   });
   const res = await client.execute(
     `SELECT id, title, description, author FROM movies ORDER BY id ASC`
@@ -16,7 +16,7 @@ export async function listMovies(): Promise<Movie[]> {
 
 export async function getMovie(id: number): Promise<Movie | null> {
   const client = createClient({
-    url: process.env.DB_URL ?? "",
+    url: process.env.DB_URL_MOVIES ?? "",
   });
   const res = await client.execute({
     sql: `SELECT id, title, description, author FROM movies WHERE id = ? LIMIT 1`,
@@ -30,7 +30,7 @@ export async function getMovie(id: number): Promise<Movie | null> {
 export async function addMovie(input: Omit<Movie, "id">): Promise<Movie> {
   console.log("Adding movie:", input);
   const client = createClient({
-    url: process.env.DB_URL ?? "",
+    url: process.env.DB_URL_MOVIES ?? "",
   });
   const res = await client.execute({
     sql: `INSERT INTO movies (title, description, author) VALUES (?, ?, ?)`,
