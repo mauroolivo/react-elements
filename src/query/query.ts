@@ -2,6 +2,8 @@
 import { createClient } from "@libsql/client";
 import type { Movie } from "@/models/movie";
 import { MoviesSchema } from "@/models/movie";
+import { type Client } from "@libsql/client";
+import { Contact } from "@/data/schema";
 
 export async function listMovies(): Promise<Movie[]> {
   const client = createClient({
@@ -76,3 +78,25 @@ export async function addMovie(input: Omit<Movie, "id">): Promise<Movie> {
 //   }
 //   return (await getMovie(id)) === null;
 // }
+export async function insertContact({ name, email, reason, notes }: Contact) {
+  let client: Client | undefined;
+  let ok = true;
+  try {
+    client = createClient({
+      url: process.env.DB_URL_CONTACTS ?? "",
+    });
+    await client.execute({
+      sql: "INSERT INTO contact(name, email, reason, notes) VALUES (?, ?, ?, ?)",
+      args: [name, email, reason, notes],
+    });
+  } catch (err) {
+    console.log("Err", err);
+    ok = false;
+  }
+  if (client) {
+    client.close();
+  }
+  return {
+    ok,
+  };
+}

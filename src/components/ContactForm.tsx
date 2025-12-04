@@ -1,9 +1,11 @@
-import Form from "next/form";
+"use client";
+
+import { insertContactAction } from "./InsertContactAction";
 
 export function ContactForm() {
   return (
-    <Form
-      action="contact/thanks"
+    <form
+      action={insertContactAction}
       className="mx-auto max-w-xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-zinc-900"
     >
       <h2 className="mb-6 text-xl font-semibold">Contact us</h2>
@@ -90,6 +92,6 @@ export function ContactForm() {
           Submit
         </button>
       </div>
-    </Form>
+    </form>
   );
 }
