@@ -1,11 +1,22 @@
 "use client";
 
 import { insertContactAction } from "./InsertContactAction";
+import { useActionState } from "react";
 
 export function ContactForm() {
+  const [{ok, error, errors, formData}, formAction, isPending] = useActionState(insertContactAction, {
+    ok: false,
+    error: "",
+    errors: {
+      name: null,
+      email: null,
+      reason: null,
+    },
+    formData: new FormData(),
+  });
   return (
     <form
-      action={insertContactAction}
+      action={formAction}
       className="mx-auto max-w-xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-zinc-900"
     >
       <h2 className="mb-6 text-xl font-semibold">Contact us</h2>
@@ -22,8 +33,14 @@ export function ContactForm() {
             type="text"
             id="name"
             name="name"
+            defaultValue={(formData.get("name") ?? "") as string}
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:border-gray-700 dark:bg-zinc-800 dark:text-gray-100"
             placeholder="e.g. Luke Skywalker"
+          />
+          <FieldError
+            clientError={errors.name}
+            serverError={errors.name}
+            errorId="name-error"
           />
         </div>
 
@@ -38,8 +55,14 @@ export function ContactForm() {
             type="email"
             id="email"
             name="email"
+            defaultValue={(formData.get("email") ?? "") as string}
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:border-gray-700 dark:bg-zinc-800 dark:text-gray-100"
             placeholder="you@example.com"
+          />
+          <FieldError
+            clientError={errors.email}
+            serverError={errors.email}
+            errorId="email-error"
           />
         </div>
 
@@ -53,6 +76,7 @@ export function ContactForm() {
           <select
             id="reason"
             name="reason"
+            defaultValue={(formData.get("reason") ?? "") as string}
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:border-gray-700 dark:bg-zinc-800 dark:text-gray-100"
           >
             <option value=""></option>
@@ -60,6 +84,11 @@ export function ContactForm() {
             <option value="Feedback">Feedback</option>
             <option value="Other">Other</option>
           </select>
+          <FieldError
+            clientError={errors.reason}
+            serverError={errors.reason}
+            errorId="reason-error"
+          />
         </div>
 
         <div className="field">
@@ -72,6 +101,7 @@ export function ContactForm() {
           <textarea
             id="notes"
             name="notes"
+            defaultValue={(formData.get("notes") ?? "") as string}
             className="min-h-28 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:border-gray-700 dark:bg-zinc-800 dark:text-gray-100"
             placeholder="Tell us more…"
           />
@@ -79,6 +109,12 @@ export function ContactForm() {
       </div>
 
       <div className="mt-6 flex items-center justify-end gap-3">
+        {!ok && (
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        )}
+        {isPending && (
+          <p className="text-sm text-gray-600 dark:text-gray-400">Saving...</p>
+        )}
         <button
           type="reset"
           className="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-zinc-800"
@@ -88,10 +124,32 @@ export function ContactForm() {
         <button
           type="submit"
           className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          disabled={isPending}
         >
           Submit
         </button>
       </div>
     </form>
+  );
+}
+
+type Err = { message?: string } | undefined | null;
+function FieldError({
+  clientError,
+  serverError,
+  errorId,
+}: {
+  clientError: Err;
+  serverError: Err;
+  errorId: string;
+}) {
+  const error = clientError ?? serverError;
+  if (!error) {
+    return null;
+  }
+  return (
+    <div id={errorId} role="alert">
+      {error.message}
+    </div>
   );
 }
