@@ -1,18 +1,10 @@
-'use client';
+"use client";
 
-import {
-  useCallback,
-  useState,
-  type ReactNode,
-} from 'react';
-import { signIn, signOut } from './auth';
-import { UserContext } from './UserContext';
+import { useCallback, useState, type ReactNode } from "react";
+import { signIn, signOut } from "./auth";
+import { UserContext } from "./UserContext";
 
-export function UserProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function UserProvider({ children }: { children: ReactNode }) {
   const [userName, setUserName] = useState<string | undefined>();
   const [permissions, setPermissions] = useState<string[] | undefined>();
   const [loading, setLoading] = useState(false);
@@ -35,11 +27,9 @@ export function UserProvider({
   const togglePermissions = useCallback(
     () =>
       setPermissions((currPermissions) =>
-        currPermissions?.length === 0
-          ? ['admin']
-          : [],
+        currPermissions?.length === 0 ? ["admin"] : []
       ),
-    [],
+    []
   );
 
   return (

@@ -1,9 +1,8 @@
 "use client";
-import { use } from "react";
-import { UserContext } from "./UserContext";
+import { useUserStore } from "./useUserStore";
 
-export function Content() {
-  const { permissions, togglePermissions } = use(UserContext);
+export function Content2() {
+  const { permissions, togglePermissions } = useUserStore();
   if (permissions === undefined) {
     return null;
   }
