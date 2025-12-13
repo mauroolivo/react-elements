@@ -1,4 +1,5 @@
 "use client";
+import { ReactNode } from "react";
 import { useUserStore } from "./useUserStore";
 
 export function Main2({ children }: { children: ReactNode }) {
