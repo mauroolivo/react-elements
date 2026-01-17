@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "ws:build": "tsc -p tsconfig.server.json",
+    "ws:start": "node dist/web-socket/server1.js",
+    "ws:dev": "tsx src/web-socket/server1.ts",
+    "ws:devsrv1": "tsx src/web-socket/server1.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -18,6 +22,7 @@
     "react-error-boundary": "^6.0.0",
     "react-hook-form": "^7.68.0",
     "swr": "^2.3.7",
+    "ws": "^8.19.0",
     "zod": "^4.1.13",
     "zustand": "^5.0.9"
   },
@@ -33,6 +38,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.7.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "tsx": "^3.12.7"
   }
 }
