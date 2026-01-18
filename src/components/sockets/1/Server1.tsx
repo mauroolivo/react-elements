@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-export default function Live1() {
+export default function Server1() {
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState("");
   const [connected, setConnected] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
 
-  console.log("Render Live1 component");
+  console.log("Render Server1 component");
   
   useEffect(() => {
     // create socket and attach handlers

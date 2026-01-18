@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import Live1 from "@/components/sockets/Live1";
+import Live1 from "@/components/sockets/1/Server1";
 
 export default function Page() {
   const [text, setText] = useState<string>("");
