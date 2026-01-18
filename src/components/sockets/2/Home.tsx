@@ -3,7 +3,7 @@ import useWebSocket from "react-use-websocket";
 import React, { JSX, useEffect, useRef } from "react";
 import throttle from "lodash-es/throttle";
 
-type Point = { x: number; y: number };
+// type Point = { x: number; y: number };
 
 interface UserState {
   state: { x: number; y: number };

@@ -8,7 +8,7 @@ interface CursorProps {
   point: Point;
 }
 
-export function Cursor({ userId, point }: CursorProps): React.JSX.Element {
+export function Cursor({ /*userId,*/ point }: CursorProps): React.JSX.Element {
   const rCursor = React.useRef<SVGSVGElement | null>(null);
 
   const animateCursor = React.useCallback((p: Point) => {
