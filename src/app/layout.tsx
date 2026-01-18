@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Providers } from '../components/Providers';
+import Link from 'next/link';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -28,7 +29,107 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <div className="flex min-h-screen bg-slate-900 text-slate-100">
+            <aside className="w-64 border-r border-slate-700 bg-slate-800 p-4">
+              <h2 className="mb-4 text-lg font-semibold">Navigation</h2>
+              <nav className="space-y-2 text-sm">
+                <Link
+                  href="/intro"
+                  className="block rounded px-2 py-1 hover:bg-slate-700"
+                >
+                  Intro
+                </Link>
+                <Link
+                  href="/admin"
+                  className="block rounded px-2 py-1 hover:bg-slate-700"
+                >
+                  Admin
+                </Link>
+                <Link
+                  href="/contact"
+                  className="block rounded px-2 py-1 hover:bg-slate-700"
+                >
+                  Contact
+                </Link>
+                <Link
+                  href="/dashboard"
+                  className="block rounded px-2 py-1 hover:bg-slate-700"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/dashboard2"
+                  className="block rounded px-2 py-1 hover:bg-slate-700"
+                >
+                  Dashboard2
+                </Link>
+                <Link
+                  href="/movies"
+                  className="block rounded px-2 py-1 hover:bg-slate-700"
+                >
+                  Movies
+                </Link>
+                <Link
+                  href="/posts"
+                  className="block rounded px-2 py-1 hover:bg-slate-700"
+                >
+                  Posts
+                </Link>
+                <Link
+                  href="/products"
+                  className="block rounded px-2 py-1 hover:bg-slate-700"
+                >
+                  Products
+                </Link>
+                <Link
+                  href="/recipes"
+                  className="block rounded px-2 py-1 hover:bg-slate-700"
+                >
+                  Recipes
+                </Link>
+                <Link
+                  href="/selector"
+                  className="block rounded px-2 py-1 hover:bg-slate-700"
+                >
+                  Selector
+                </Link>
+                <Link
+                  href="/task"
+                  className="block rounded px-2 py-1 hover:bg-slate-700"
+                >
+                  Task
+                </Link>
+                <Link
+                  href="/user"
+                  className="block rounded px-2 py-1 hover:bg-slate-700"
+                >
+                  User
+                </Link>
+                <Link
+                  href="/products/1"
+                  className="block rounded px-2 py-1 hover:bg-slate-700"
+                >
+                  Product (example)
+                </Link>
+                <Link
+                  href="/sockets/1"
+                  className="block rounded px-2 py-1 hover:bg-slate-700"
+                >
+                  Socket 1
+                </Link>
+                <Link
+                  href="/sockets/2"
+                  className="block rounded px-2 py-1 hover:bg-slate-700"
+                >
+                  Socket 2
+                </Link>
+              </nav>
+            </aside>
+
+            <main className="flex-1 bg-transparent p-6">{children}</main>
+          </div>
+        </Providers>
       </body>
     </html>
   );
