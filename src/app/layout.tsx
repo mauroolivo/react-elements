@@ -132,6 +132,12 @@ export  function ServerMenu() {
         >
           Socket 2
         </Link>
+        <Link
+          href="/sockets/3"
+          className="block rounded px-2 py-1 hover:bg-slate-700"
+        >
+          Socket 3
+        </Link>
       </nav>
     </aside>
   );
