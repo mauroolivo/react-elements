@@ -8,7 +8,7 @@ export default function Server1() {
   const wsRef = useRef<WebSocket | null>(null);
 
   console.log("Render Server1 component");
-  
+
   useEffect(() => {
     // create socket and attach handlers
     if (typeof window === "undefined") return;
