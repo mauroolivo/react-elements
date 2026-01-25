@@ -1,38 +1,24 @@
-// import { type NextRequest } from 'next/server';
-// import { insertContact } from '@/query/query';
+import type { NextRequest } from 'next/server';
+import { contactSchema } from '@/models/contact';
+import { insertContact } from '@/query/query';
 
-// export async function POST(request: NextRequest) {
-//   const data = await request.json();
-//   console.log('RH', data);
-//   const result = await insertContact(data);
-//   console.log('RH', result);
-//   if (result.ok) {
-//     return Response.json({}, { status: 201 });
-//   }
-//   return Response.json({}, { status: 500 });
-// }
+export async function POST(request: NextRequest) {
+  const payload = await request.json().catch(() => null);
+  const parsed = contactSchema.safeParse(payload);
+  if (!parsed.success) {
+    return Response.json(
+      { ok: false, error: 'Invalid contact payload' },
+      { status: 400 }
+    );
+  }
 
-// unused now, this was used. from client side form submission
-
-// export function ContactForm() {
-//     const { push } = useRouter();
-//     async function handleAction( formData: FormData ) {
-//         const contact = Object.fromEntries(formData) as Contact;
-
-//         const response = await fetch('/api/contact', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//             body: JSON.stringify(contact),
-//         });
-//         if (response.ok) {
-//             push('/contact/thanks/?name=' + encodeURIComponent(contact.name));
-//         } else {
-//             alert('There was an error submitting the form. Please try again later.');
-//         }
-
-//     }
-//   return (
-//     <form
-//       action={handleAction}
+  try {
+    await insertContact(parsed.data);
+    return Response.json({ ok: true }, { status: 201 });
+  } catch (e) {
+    return Response.json(
+      { ok: false, error: e instanceof Error ? e.message : 'Save failed' },
+      { status: 500 }
+    );
+  }
+}
