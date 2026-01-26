@@ -138,6 +138,30 @@ export  function ServerMenu() {
         >
           Socket 3
         </Link>
+        <Link
+          href="/sockets/4"
+          className="block rounded px-2 py-1 hover:bg-slate-700"
+        >
+          Socket 4
+        </Link>
+        <Link
+          href="/sockets/5"
+          className="block rounded px-2 py-1 hover:bg-slate-700"
+        >
+          Socket 5
+        </Link>
+        <Link
+          href="/github/auth"
+          className="block rounded px-2 py-1 hover:bg-slate-700"
+        >
+          GitHub Auth
+        </Link>
+        <Link
+          href="/github/repos"
+          className="block rounded px-2 py-1 hover:bg-slate-700"
+        >
+          GitHub Repos
+        </Link>
       </nav>
     </aside>
   );
