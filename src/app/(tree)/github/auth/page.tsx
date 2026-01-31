@@ -12,7 +12,8 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import useSWR from 'swr';
+import useSWRMutation from 'swr/mutation';
 
 type GitHubUser = {
   login: string;
@@ -21,41 +22,29 @@ type GitHubUser = {
 };
 
 export default function Page() {
-  const [user, setUser] = useState<GitHubUser | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const fetcher = async (url: string): Promise<GitHubUser | null> => {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (res.status === 401) return null; // no token cookie present yet
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return (await res.json()) as GitHubUser;
+  };
 
-  async function loadMe() {
-    setLoading(true);
-    setError(null);
+  const {
+    data: user,
+    error,
+    isLoading,
+    mutate,
+  } = useSWR<GitHubUser | null>('/api/github/user', fetcher, {
+    shouldRetryOnError: false,
+  });
 
-    try {
-      const res = await fetch('/api/github/user', { cache: 'no-store' });
-
-      // 401 means: no token cookie present yet.
-      if (res.status === 401) {
-        setUser(null);
-        return;
-      }
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = (await res.json()) as GitHubUser;
-      setUser(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoading(false);
+  const { trigger: logout, isMutating: loggingOut } = useSWRMutation(
+    '/api/auth/logout',
+    async (url: string) => {
+      await fetch(url, { method: 'POST' });
+      await mutate();
     }
-  }
-
-  useEffect(() => {
-    void loadMe();
-  }, []);
-
-  async function logout() {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    await loadMe();
-  }
+  );
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-4 p-6">
@@ -78,7 +67,7 @@ export default function Page() {
         GitHub APIs.
       </p>
 
-      {loading ? (
+      {isLoading || loggingOut ? (
         <div className="rounded-lg border border-slate-700 bg-slate-900/40 p-4 text-sm">
           Loading…
         </div>
@@ -95,7 +84,7 @@ export default function Page() {
             <div className="text-sm text-slate-400">{user.name ?? '—'}</div>
           </div>
           <button
-            onClick={logout}
+            onClick={() => void logout()}
             className="rounded-md bg-slate-700 px-3 py-2 text-sm hover:bg-slate-600"
           >
             Logout
@@ -115,7 +104,7 @@ export default function Page() {
 
       {error ? (
         <div className="rounded-lg border border-red-900/60 bg-red-950/40 p-3 text-sm text-red-200">
-          {error}
+          {error.message}
         </div>
       ) : null}
     </div>
