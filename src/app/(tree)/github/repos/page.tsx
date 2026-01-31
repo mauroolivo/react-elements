@@ -8,65 +8,11 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
-
-type Repo = {
-  id: number;
-  name: string;
-  full_name: string;
-  html_url: string;
-  description: string | null;
-  private: boolean;
-  fork: boolean;
-  stargazers_count: number;
-  forks_count: number;
-  language: string | null;
-  updated_at: string;
-};
+import { useGithubRepos } from '@/hooks/useGithubRepos';
+import type { Repo } from '@/hooks/useGithubRepos';
 
 export default function Page() {
-  const [repos, setRepos] = useState<Repo[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [notLoggedIn, setNotLoggedIn] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      setError(null);
-      setNotLoggedIn(false);
-
-      try {
-        const res = await fetch('/api/github/repos', { cache: 'no-store' });
-
-        if (res.status === 401) {
-          if (!cancelled) {
-            setNotLoggedIn(true);
-            setRepos(null);
-          }
-          return;
-        }
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = (await res.json()) as Repo[];
-        if (!cancelled) setRepos(data);
-      } catch (e) {
-        if (!cancelled) {
-          setError(e instanceof Error ? e.message : 'Unknown error');
-          setRepos(null);
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { repos, unauthorized, error, isLoading } = useGithubRepos();
 
   return (
     <main className="mx-auto max-w-4xl p-6">
@@ -77,11 +23,11 @@ export default function Page() {
         </p>
       </header>
 
-      {loading ? (
+      {isLoading ? (
         <div className="rounded-lg border border-slate-700 bg-slate-900/40 p-4 text-sm text-slate-300">
           Loading repositories…
         </div>
-      ) : notLoggedIn ? (
+      ) : unauthorized ? (
         <div className="rounded-lg border border-amber-900/50 bg-amber-950/30 p-4">
           <p className="text-sm text-amber-100">
             You are not logged in. Connect your GitHub account to load
@@ -96,11 +42,11 @@ export default function Page() {
         </div>
       ) : error ? (
         <div className="rounded-lg border border-red-900/60 bg-red-950/40 p-4 text-sm text-red-200">
-          {error}
+          {error.message}
         </div>
       ) : repos && repos.length ? (
         <ul className="space-y-3">
-          {repos.map((r) => (
+          {repos.map((r: Repo) => (
             <li
               key={r.id}
               className="rounded-lg border border-slate-700 bg-slate-900/40 p-4"
