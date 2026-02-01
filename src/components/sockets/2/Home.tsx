@@ -1,7 +1,7 @@
 import { Cursor } from "./Cursor";
 import useWebSocket from "react-use-websocket";
 import React, { JSX, useEffect, useRef } from "react";
-import throttle from "lodash-es/throttle";
+import throttle from "lodash.throttle";
 
 // type Point = { x: number; y: number };
 

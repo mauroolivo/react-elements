@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import debounce from "lodash-es/debounce";
+import debounce from "lodash.debounce";
 
 type Result = {
   query: string;
