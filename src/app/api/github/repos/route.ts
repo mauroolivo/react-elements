@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { fetchWithGitHubAuth } from '../_token';
 
 export const runtime = 'nodejs';
 
@@ -19,12 +20,6 @@ type GitHubRepo = {
 
 export async function GET() {
   const cookieStore = await cookies();
-  const token = cookieStore.get('gh_token')?.value;
-
-  if (!token) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-  }
-
   // Authorized call to list repositories for the authenticated user.
   // Docs: https://docs.github.com/rest/repos/repos#list-repositories-for-the-authenticated-user
   const url = new URL('https://api.github.com/user/repos');
@@ -32,14 +27,13 @@ export async function GET() {
   url.searchParams.set('sort', 'updated');
   url.searchParams.set('direction', 'desc');
 
-  const res = await fetch(url.toString(), {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github+json',
-      'User-Agent': 'react-elements',
-    },
+  const res = await fetchWithGitHubAuth(cookieStore, url.toString(), {
     cache: 'no-store',
   });
+
+  if (res.status === 401) {
+    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  }
 
   if (!res.ok) {
     const text = await res.text();

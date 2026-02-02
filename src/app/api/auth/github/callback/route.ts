@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { setAuthCookies } from '@/app/api/github/_token';
 
 export const runtime = 'nodejs';
 
@@ -67,6 +68,9 @@ export async function GET(req: Request) {
     access_token?: string;
     token_type?: string;
     scope?: string;
+    expires_in?: number;
+    refresh_token?: string;
+    refresh_token_expires_in?: number;
     error?: string;
     error_description?: string;
   };
@@ -78,14 +82,9 @@ export async function GET(req: Request) {
     );
   }
 
-  // Store token in httpOnly cookie so client JS can't read it.
-  cookieStore.set('gh_token', tokenJson.access_token, {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-  });
+  // Store tokens in httpOnly cookies so client JS can't read them.
+  // Note: refresh tokens are only returned if expiring user tokens are enabled in your OAuth app.
+  setAuthCookies(cookieStore, tokenJson);
 
   // Clear one-time cookies
   cookieStore.delete('gh_oauth_state');
