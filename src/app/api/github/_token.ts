@@ -130,10 +130,17 @@ async function refreshAccessToken(cookieStore: CookieStore) {
 }
 
 export async function getGitHubAccessToken(cookieStore: CookieStore) {
+  console.log('Retrieving GitHub access token from cookies');
   const token = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
-  if (!token) return null;
-
   const expiresAt = readIntCookie(cookieStore, ACCESS_TOKEN_EXPIRES_AT_COOKIE);
+
+  // If access token is missing, try to obtain a new one via refresh token.
+  if (!token) {
+    const refreshed = await refreshAccessToken(cookieStore);
+    return refreshed;
+  }
+
+  // If access token exists but is (about to be) expired, refresh it.
   if (expiresAt && nowSeconds() >= expiresAt - CLOCK_SKEW_SECONDS) {
     const refreshed = await refreshAccessToken(cookieStore);
     return refreshed ?? token;
@@ -143,7 +150,7 @@ export async function getGitHubAccessToken(cookieStore: CookieStore) {
 }
 
 export async function refreshGitHubAccessToken(cookieStore: CookieStore) {
-  return refreshAccessToken(cookieStore);
+  return cookieStore;
 }
 
 export async function fetchWithGitHubAuth(

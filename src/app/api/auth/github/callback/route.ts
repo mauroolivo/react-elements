@@ -74,7 +74,7 @@ export async function GET(req: Request) {
     error?: string;
     error_description?: string;
   };
-
+  console.log('Token response:', tokenJson);
   if (!tokenJson.access_token) {
     return NextResponse.json(
       { error: tokenJson.error ?? 'No access_token', details: tokenJson },
