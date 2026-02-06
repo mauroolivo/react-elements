@@ -45,7 +45,9 @@ export function getFirebaseAnalytics() {
 
 export function getFirebaseRemoteConfig(): RemoteConfig {
   if (typeof window === "undefined") {
-    throw new Error("Remote Config can only be used in the browser (client-side)");
+    throw new Error(
+      "Remote Config can only be used in the browser (client-side)",
+    );
   }
 
   const app = getFirebaseApp();
@@ -54,14 +56,16 @@ export function getFirebaseRemoteConfig(): RemoteConfig {
   // Reduce fetch interval in development for quicker iteration
   try {
     rc.settings = {
-      minimumFetchIntervalMillis: process.env.NODE_ENV === "development" ? 1000 : 3600000,
+      minimumFetchIntervalMillis:
+        process.env.NODE_ENV === "development" ? 1000 : 3600000,
     } as RemoteConfigSettings;
   } catch (e) {
-    console.warn("Failed to set Remote Config settings, possibly due to unsupported SDK version.", e);
+    console.warn(
+      "Failed to set Remote Config settings, possibly due to unsupported SDK version.",
+      e,
+    );
     // ignore if SDK version doesn't support settings assignment in this environment
   }
-
-
 
   return rc;
 }
@@ -71,19 +75,19 @@ export async function fetchAndActivateRemoteConfig(): Promise<boolean> {
     const rc = getFirebaseRemoteConfig();
     return await fetchAndActivate(rc);
   } catch (e) {
-    console.error('Remote Config fetchAndActivate failed', e);
+    console.error("Remote Config fetchAndActivate failed", e);
     return false;
   }
 }
 
-export function getRemoteConfigValue(key: string, defaultValue = ''): string {
+export function getRemoteConfigValue(key: string, defaultValue = ""): string {
   try {
     const rc = getFirebaseRemoteConfig();
     const val = getValue(rc, key);
     const s = val.asString();
-    return s === '' ? defaultValue : s;
+    return s === "" ? defaultValue : s;
   } catch (e) {
-    console.error('getRemoteConfigValue error', e);
+    console.error("getRemoteConfigValue error", e);
     return defaultValue;
   }
 }
