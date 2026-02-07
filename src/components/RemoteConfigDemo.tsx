@@ -29,6 +29,7 @@ export default function RemoteConfigDemo() {
         setMessage(val);
         setStatus("done");
       } catch (e) {
+        console.log("Remote Config error", e);
         if (!mounted) return;
         setFetchOk(false);
         setMessage(getRemoteConfigValue("welcome_message", "failed"));
@@ -46,6 +47,9 @@ export default function RemoteConfigDemo() {
     <div>
       <strong>Remote Config demo</strong>
       <div>Status: {status}</div>
+      <div>
+        Fetch: {fetchOk === null ? "pending" : fetchOk ? "ok" : "failed"}
+      </div>
       <div>Value: {message}</div>
     </div>
   );

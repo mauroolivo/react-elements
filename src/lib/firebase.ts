@@ -7,6 +7,16 @@ import {
   type RemoteConfig,
   type RemoteConfigSettings,
 } from "firebase/remote-config";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+  updateProfile,
+  type User,
+  type Auth,
+} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -68,6 +78,48 @@ export function getFirebaseRemoteConfig(): RemoteConfig {
   }
 
   return rc;
+}
+
+export function getFirebaseAuth(): Auth {
+  if (typeof window === "undefined") {
+    throw new Error("Auth can only be used in the browser (client-side)");
+  }
+
+  const app = getFirebaseApp();
+  return getAuth(app);
+}
+
+export async function signupWithEmail(
+  username: string | null,
+  email: string,
+  password: string,
+): Promise<User> {
+  const auth = getFirebaseAuth();
+  const cred = await createUserWithEmailAndPassword(auth, email, password);
+  if (username) {
+    try {
+      await updateProfile(cred.user, { displayName: username });
+    } catch (e) {
+        console.warn("Failed to update user profile with username", e);
+      // ignore profile update failure
+    }
+  }
+  return cred.user;
+}
+
+export async function signinWithEmail(email: string, password: string) {
+  const auth = getFirebaseAuth();
+  return await signInWithEmailAndPassword(auth, email, password);
+}
+
+export async function logoutFirebase() {
+  const auth = getFirebaseAuth();
+  return await firebaseSignOut(auth);
+}
+
+export function onAuthChanged(cb: (user: User | null) => void) {
+  const auth = getFirebaseAuth();
+  return onAuthStateChanged(auth, cb);
 }
 
 export async function fetchAndActivateRemoteConfig(): Promise<boolean> {
