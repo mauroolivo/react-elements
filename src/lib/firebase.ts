@@ -17,6 +17,11 @@ import {
   type User,
   type Auth,
 } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  type UserCredential,
+} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -100,7 +105,7 @@ export async function signupWithEmail(
     try {
       await updateProfile(cred.user, { displayName: username });
     } catch (e) {
-        console.warn("Failed to update user profile with username", e);
+      console.warn("Failed to update user profile with username", e);
       // ignore profile update failure
     }
   }
@@ -110,6 +115,13 @@ export async function signupWithEmail(
 export async function signinWithEmail(email: string, password: string) {
   const auth = getFirebaseAuth();
   return await signInWithEmailAndPassword(auth, email, password);
+}
+
+export async function signinWithGoogle(): Promise<UserCredential> {
+  const auth = getFirebaseAuth();
+  const provider = new GoogleAuthProvider();
+  // optionally request additional scopes here: provider.addScope('profile')
+  return await signInWithPopup(auth, provider);
 }
 
 export async function logoutFirebase() {

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { signinWithEmail } from '../../../../lib/firebase';
+import { signinWithEmail, signinWithGoogle } from '../../../../lib/firebase';
 import { onAuthChanged } from '../../../../lib/firebase';
 import type { User } from 'firebase/auth';
 
@@ -40,6 +40,20 @@ export default function SignInPage() {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       setError(msg || 'Sign in failed');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleGoogle() {
+    setError(null);
+    setLoading(true);
+    try {
+      await signinWithGoogle();
+      router.push('/firebase/demo');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg || 'Google sign-in failed');
     } finally {
       setLoading(false);
     }
@@ -88,6 +102,16 @@ export default function SignInPage() {
                 className="inline-flex w-full items-center justify-center rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-60"
               >
                 {loading ? 'Signing in...' : 'Sign in'}
+              </button>
+            </div>
+            <div>
+              <button
+                type="button"
+                onClick={handleGoogle}
+                disabled={loading}
+                className="inline-flex w-full items-center justify-center rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:opacity-60"
+              >
+                {loading ? 'Please wait...' : 'Continue with Google'}
               </button>
             </div>
           </form>
