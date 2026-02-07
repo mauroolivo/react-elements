@@ -2,19 +2,19 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { logoutFirebase } from '../../../../lib/firebase';
+import useAuthStore from '../../../../stores/useAuthStore';
 
 export default function LogoutPage() {
   const router = useRouter();
+  const { logout } = useAuthStore();
 
   useEffect(() => {
     let mounted = true;
     async function run() {
       try {
-        await logoutFirebase();
+        await logout();
       } catch (e) {
         console.error('Logout error', e);
-        // ignore
       }
       if (mounted) router.push('/firebase/signin');
     }
@@ -22,7 +22,7 @@ export default function LogoutPage() {
     return () => {
       mounted = false;
     };
-  }, [router]);
+  }, [router, logout]);
 
   return <div>Signing out...</div>;
 }

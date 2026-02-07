@@ -3,60 +3,43 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { signupWithEmail, signinWithGoogle } from '../../../../lib/firebase';
-import { onAuthChanged } from '../../../../lib/firebase';
-import type { User } from 'firebase/auth';
+import useAuthStore from '../../../../stores/useAuthStore';
 
 export default function SignUpPage() {
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const { user, signup, signinWithGoogle, loading, error, initAuthListener } =
+    useAuthStore();
 
   useEffect(() => {
+    initAuthListener();
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
-    const unsub = onAuthChanged((u) => {
-      setUser(u);
-      if (u) {
-        // small delay so the "already signed in" message is visible
-        timeoutId = setTimeout(() => router.push('/firebase/demo'), 3000);
-      }
-    });
+    if (user) timeoutId = setTimeout(() => router.push('/firebase/demo'), 3000);
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
-      unsub();
     };
-  }, [router]);
+  }, [router, user, initAuthListener]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
-    setLoading(true);
     try {
-      await signupWithEmail(username || null, email, password);
+      await signup(username || null, email, password);
       router.push('/firebase/demo');
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      setError(msg || 'Signup failed');
-    } finally {
-      setLoading(false);
+    } catch (err) {
+        console.log('Signup error', err);
+      // errors surfaced via store.error
     }
   }
 
   async function handleGoogle() {
-    setError(null);
-    setLoading(true);
     try {
       await signinWithGoogle();
       router.push('/firebase/demo');
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      setError(msg || 'Google sign-in failed');
-    } finally {
-      setLoading(false);
+    } catch (err) {
+        console.log('Google signup error', err);
+      // handled in store
     }
   }
 

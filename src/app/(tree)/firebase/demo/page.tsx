@@ -1,16 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { onAuthChanged, logoutFirebase } from '../../../../lib/firebase';
-import type { User } from 'firebase/auth';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import useAuthStore from '../../../../stores/useAuthStore';
 
 export default function DemoPage() {
-  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+  const { user, logout, initAuthListener } = useAuthStore();
 
   useEffect(() => {
-    const unsub = onAuthChanged((u) => setUser(u));
-    return unsub;
-  }, []);
+    initAuthListener();
+  }, [initAuthListener]);
 
   if (!user)
     return (
@@ -24,7 +24,14 @@ export default function DemoPage() {
       <h2>Authenticated demo</h2>
       <div>Name: {user.displayName || '(no username)'}</div>
       <div>Email: {user.email}</div>
-      <button onClick={() => logoutFirebase()}>Sign out</button>
+      <button
+        onClick={async () => {
+          await logout();
+          router.push('/firebase/signin');
+        }}
+      >
+        Sign out
+      </button>
     </div>
   );
 }
