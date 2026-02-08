@@ -18,6 +18,14 @@ import {
   type Auth,
 } from "firebase/auth";
 import {
+  getFirestore,
+  collection,
+  getDocs,
+  type Firestore,
+//   type DocumentData,
+} from "firebase/firestore";
+import { z } from "zod";
+import {
   GoogleAuthProvider,
   signInWithPopup,
   type UserCredential,
@@ -92,6 +100,49 @@ export function getFirebaseAuth(): Auth {
 
   const app = getFirebaseApp();
   return getAuth(app);
+}
+
+export function getFirestoreDb(): Firestore {
+  if (typeof window === "undefined") {
+    throw new Error("Firestore can only be used in the browser (client-side)");
+  }
+  const app = getFirebaseApp();
+  return getFirestore(app);
+}
+
+const ArticleSchema = z.object({
+  content: z.string(),
+  tags: z.array(z.string()),
+  title: z.string(),
+});
+
+export type Article = z.infer<typeof ArticleSchema>;
+
+export type ArticleDoc = { id: string; data: Article };
+
+export async function fetchArticles(): Promise<ArticleDoc[]> {
+  try {
+    const db = getFirestoreDb();
+    const col = collection(db, "article");
+    const snap = await getDocs(col);
+    const out: ArticleDoc[] = [];
+    snap.docs.forEach((d) => {
+      const raw = d.data();
+      const parsed = ArticleSchema.safeParse(raw);
+      if (parsed.success) {
+        out.push({ id: d.id, data: parsed.data });
+      } else {
+        console.warn(
+          `Skipping invalid article doc ${d.id}`,
+          parsed.error.format(),
+        );
+      }
+    });
+    return out;
+  } catch (e) {
+    console.error("fetchArticles error", e);
+    throw e;
+  }
 }
 
 export async function signupWithEmail(

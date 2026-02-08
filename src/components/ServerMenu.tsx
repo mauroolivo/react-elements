@@ -240,6 +240,12 @@ export default function ServerMenu() {
                 Demo
               </Link>
               <Link
+                href="/firebase/articles"
+                className="block rounded px-2 py-1 hover:bg-slate-700"
+              >
+                Articles
+              </Link>
+              <Link
                 href="/firebase/conditional"
                 className="block rounded px-2 py-1 hover:bg-slate-700"
               >

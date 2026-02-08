@@ -1,22 +1,24 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react'
-import Link from 'next/link'
-import useAuthStore from '../../../../stores/useAuthStore'
+import { useEffect } from 'react';
+import Link from 'next/link';
+import useAuthStore from '../../../../stores/useAuthStore';
 
 export default function ConditionalDemoPage() {
-  const { user, initAuthListener } = useAuthStore()
+  const { user, initAuthListener } = useAuthStore();
 
   useEffect(() => {
-    initAuthListener()
-  }, [initAuthListener])
+    initAuthListener();
+  }, [initAuthListener]);
 
   return (
-    <div className="min-h-screen p-6 bg-slate-900 text-slate-100">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <div className="min-h-screen bg-slate-900 p-6 text-slate-100">
+      <div className="mx-auto max-w-3xl space-y-6">
         <section className="rounded bg-gray-800 p-6">
           <h1 className="text-2xl font-semibold">Firebase Demo — Public</h1>
-          <p className="mt-2 text-sm text-gray-300">This is public demo content visible to everyone.</p>
+          <p className="mt-2 text-sm text-gray-300">
+            This is public demo content visible to everyone.
+          </p>
         </section>
 
         <section className="rounded bg-gray-800 p-6">
@@ -25,7 +27,7 @@ export default function ConditionalDemoPage() {
             <div className="mt-2 text-sm text-gray-200">
               <p>Welcome back, {user.displayName || user.email}!</p>
               <p className="mt-2">Here is some user-only demo content:</p>
-              <ul className="list-disc pl-5 mt-2 text-gray-300">
+              <ul className="mt-2 list-disc pl-5 text-gray-300">
                 <li>Exclusive feature A</li>
                 <li>Exclusive feature B</li>
                 <li>Account email: {user.email}</li>
@@ -34,11 +36,16 @@ export default function ConditionalDemoPage() {
           ) : (
             <div className="mt-2 text-sm text-gray-300">
               <p>You must sign in to see protected demo content.</p>
-              <Link href="/firebase/signin" className="text-blue-400 hover:underline">Sign in</Link>
+              <Link
+                href="/firebase/signin"
+                className="text-blue-400 hover:underline"
+              >
+                Sign in
+              </Link>
             </div>
           )}
         </section>
       </div>
     </div>
-  )
+  );
 }
