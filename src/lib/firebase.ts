@@ -21,9 +21,13 @@ import {
   getFirestore,
   collection,
   getDocs,
+  query,
+  orderBy,
+  serverTimestamp,
   type Firestore,
-//   type DocumentData,
+  //   type DocumentData,
 } from "firebase/firestore";
+import { addDoc } from "firebase/firestore";
 import { z } from "zod";
 import {
   GoogleAuthProvider,
@@ -114,6 +118,8 @@ const ArticleSchema = z.object({
   content: z.string(),
   tags: z.array(z.string()),
   title: z.string(),
+  // createdAt may be a Firestore Timestamp or a JS Date; allow any and optional
+  createdAt: z.any().optional(),
 });
 
 export type Article = z.infer<typeof ArticleSchema>;
@@ -124,7 +130,8 @@ export async function fetchArticles(): Promise<ArticleDoc[]> {
   try {
     const db = getFirestoreDb();
     const col = collection(db, "article");
-    const snap = await getDocs(col);
+    const q = query(col, orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
     const out: ArticleDoc[] = [];
     snap.docs.forEach((d) => {
       const raw = d.data();
@@ -138,9 +145,23 @@ export async function fetchArticles(): Promise<ArticleDoc[]> {
         );
       }
     });
+    console.log(`Fetched ${out} articles`);
     return out;
   } catch (e) {
     console.error("fetchArticles error", e);
+    throw e;
+  }
+}
+
+export async function createArticle(article: Article): Promise<string> {
+  try {
+    const parsed = ArticleSchema.parse(article);
+    const db = getFirestoreDb();
+    const col = collection(db, "article");
+    const ref = await addDoc(col, { ...parsed, createdAt: serverTimestamp() });
+    return ref.id;
+  } catch (e) {
+    console.error("createArticle error", e);
     throw e;
   }
 }
