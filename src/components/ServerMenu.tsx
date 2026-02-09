@@ -260,6 +260,12 @@ export default function ServerMenu() {
         >
           Debounce Demo
         </Link>
+        <Link
+          href="/debounce2"
+          className="block rounded px-2 py-1 hover:bg-slate-700"
+        >
+          Debounce Demo 2
+        </Link>
       </nav>
     </aside>
   );

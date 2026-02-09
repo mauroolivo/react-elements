@@ -107,6 +107,7 @@ export default function ArticlesPage() {
       const n = Number(v as unknown as number);
       if (!Number.isNaN(n)) return new Date(n).toLocaleString();
     } catch (e) {
+      console.warn('formatDate error', e);
       // fallthrough
     }
     return String(v);

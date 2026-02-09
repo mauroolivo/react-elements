@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import debounce from "lodash.debounce";
 
 type Result = {
@@ -14,14 +14,23 @@ async function simulateRemoteCall(q: string) {
   return { query: q, timestamp: Date.now() } satisfies Result;
 }
 
-export default function DebouncedInput() {
-  const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<Result | null>(null);
+export default function DebouncedInput2() {
+  // keep input value in a ref to avoid re-renders while typing
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const reqIdRef = useRef(0);
 
-  const performRequest = useCallback(
-    async (q: string, currentReqId: number) => {
+  // only result and loading that matter for the UI are kept in state
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<Result | null>(null);
+
+  // initialize debounced function once and keep in a ref to avoid rerenders
+  const debouncedRef = useRef<
+    (((q: string, id: number) => void) & { cancel?: () => void }) | null
+  >(null);
+
+  useEffect(() => {
+    debouncedRef.current = debounce(async (q: string, currentReqId: number) => {
+      setLoading(true);
       try {
         const data = await simulateRemoteCall(q);
         // ignore out-of-order responses
@@ -30,30 +39,17 @@ export default function DebouncedInput() {
       } finally {
         if (reqIdRef.current === currentReqId) setLoading(false);
       }
-    },
-    [],
-  );
+    }, 400);
 
-  const debouncedRequest = useMemo(
-    () =>
-      debounce((q: string, currentReqId: number) => {
-        return void performRequest(q, currentReqId);
-      }, 400),
-    [performRequest],
-  );
-
-  useEffect(() => {
     return () => {
-      debouncedRequest.cancel();
+      debouncedRef.current?.cancel?.();
     };
-  }, [debouncedRequest]);
+  }, []);
 
-  function onChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const q = e.target.value;
-    setQuery(q);
-    setLoading(true);
+  function onChange() {
+    const q = inputRef.current?.value ?? "";
     const id = ++reqIdRef.current;
-    debouncedRequest(q, id);
+    debouncedRef.current?.(q, id);
   }
 
   return (
@@ -61,14 +57,14 @@ export default function DebouncedInput() {
       onSubmit={(e) => e.preventDefault()}
       className="mx-auto flex max-w-xl flex-col gap-3"
     >
-      <label htmlFor="search" className="text-sm text-slate-300">
-        Search (debounced)
+      <label htmlFor="search2" className="text-sm text-slate-300">
+        Search (debounced, ref-based)
       </label>
       <input
-        id="search"
-        name="search"
+        id="search2"
+        name="search2"
         type="text"
-        value={query}
+        ref={inputRef}
         onChange={onChange}
         placeholder="Type to search..."
         className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 outline-none focus:border-emerald-600"
