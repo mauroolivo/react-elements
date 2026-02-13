@@ -6,6 +6,7 @@ import {
   createArticle,
   type ArticleDoc,
   type Article,
+  type CreateArticleInput,
 } from '../../../../lib/firebase';
 import { useAuthStore } from '../../../../stores/useAuthStore';
 
@@ -61,7 +62,7 @@ export default function ArticlesPage() {
       .split(',')
       .map((t) => t.trim())
       .filter(Boolean);
-    const article: Article = {
+    const article: CreateArticleInput = {
       title: title.trim(),
       content: content.trim(),
       tags,
@@ -141,6 +142,12 @@ export default function ArticlesPage() {
                       <div className="text-sm text-gray-200">ID: {a.id}</div>
                       <div className="text-xs text-gray-400">
                         Created: {formatDate(a.data.createdAt)}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        Valid from: {formatDate(a.data.validFrom)}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        Valid until: {formatDate(a.data.validUntil)}
                       </div>
                       <div className="mt-1 text-sm text-gray-300">
                         <div className="font-medium">{article.title}</div>

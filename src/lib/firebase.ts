@@ -24,6 +24,7 @@ import {
   query,
   orderBy,
   serverTimestamp,
+  Timestamp,
   type Firestore,
   //   type DocumentData,
 } from "firebase/firestore";
@@ -118,11 +119,30 @@ const ArticleSchema = z.object({
   content: z.string(),
   tags: z.array(z.string()),
   title: z.string(),
-  // createdAt may be a Firestore Timestamp or a JS Date; allow any and optional
-  createdAt: z.any().optional(),
+  // createdAt/validFrom/validUntil may be Firestore Timestamps or JS Dates; required
+  createdAt: z.any(),
+  validFrom: z.any(),
+  validUntil: z.any(),
+});
+
+const CreateArticleSchema = z.object({
+  content: z.string(),
+  tags: z.array(z.string()),
+  title: z.string(),
+  // createdAt/validFrom/validUntil may be Firestore Timestamps or JS Dates; required
+  createdAt: z.any(),
+  validFrom: z.any(),
+  validUntil: z.any(),
+});
+
+const CreateArticleInputSchema = z.object({
+  content: z.string(),
+  tags: z.array(z.string()),
+  title: z.string(),
 });
 
 export type Article = z.infer<typeof ArticleSchema>;
+export type CreateArticleInput = z.infer<typeof CreateArticleInputSchema>;
 
 export type ArticleDoc = { id: string; data: Article };
 
@@ -153,12 +173,26 @@ export async function fetchArticles(): Promise<ArticleDoc[]> {
   }
 }
 
-export async function createArticle(article: Article): Promise<string> {
+export async function createArticle(
+  article: CreateArticleInput,
+): Promise<string> {
   try {
-    const parsed = ArticleSchema.parse(article);
+    const input = CreateArticleInputSchema.parse(article);
     const db = getFirestoreDb();
     const col = collection(db, "article");
-    const ref = await addDoc(col, { ...parsed, createdAt: serverTimestamp() });
+    const validFrom = Timestamp.now();
+    const validUntil = Timestamp.fromMillis(
+      validFrom.toMillis() + 24 * 60 * 60 * 1000,
+    );
+    const parsed = CreateArticleSchema.parse({
+      ...input,
+      createdAt: serverTimestamp(),
+      validFrom,
+      validUntil,
+    });
+    const ref = await addDoc(col, {
+      ...parsed,
+    });
     return ref.id;
   } catch (e) {
     console.error("createArticle error", e);
