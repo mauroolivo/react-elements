@@ -139,6 +139,8 @@ const CreateArticleInputSchema = z.object({
   content: z.string(),
   tags: z.array(z.string()),
   title: z.string(),
+  validFrom: z.string(),
+  validUntil: z.string(),
 });
 
 export type Article = z.infer<typeof ArticleSchema>;
@@ -180,16 +182,32 @@ export async function createArticle(
     const input = CreateArticleInputSchema.parse(article);
     const db = getFirestoreDb();
     const col = collection(db, "article");
-    const validFrom = Timestamp.now();
-    const validUntil = Timestamp.fromMillis(
-      validFrom.toMillis() + 24 * 60 * 60 * 1000,
-    );
+    const validFromDate = new Date(input.validFrom);
+    const validUntilDate = new Date(input.validUntil);
+
+    if (
+      Number.isNaN(validFromDate.getTime()) ||
+      Number.isNaN(validUntilDate.getTime())
+    ) {
+      throw new Error("Invalid validFrom or validUntil date");
+    }
+
+    const validFrom = Timestamp.fromDate(validFromDate);
+    const validUntil = Timestamp.fromDate(validUntilDate);
+
+    if (validUntil.toMillis() < validFrom.toMillis()) {
+      throw new Error("validUntil must be greater than or equal to validFrom");
+    }
+
     const parsed = CreateArticleSchema.parse({
-      ...input,
+      title: input.title,
+      content: input.content,
+      tags: input.tags,
       createdAt: serverTimestamp(),
       validFrom,
       validUntil,
     });
+    console.log("Creating article with data", parsed);
     const ref = await addDoc(col, {
       ...parsed,
     });

@@ -20,6 +20,8 @@ export default function ArticlesPage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tagsInput, setTagsInput] = useState('');
+  const [validFrom, setValidFrom] = useState('');
+  const [validUntil, setValidUntil] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -54,7 +56,13 @@ export default function ArticlesPage() {
 
   async function handleCreate(e?: React.FormEvent) {
     e?.preventDefault();
-    if (!title.trim() || !content.trim() || !tagsInput.trim()) {
+    if (
+      !title.trim() ||
+      !content.trim() ||
+      !tagsInput.trim() ||
+      !validFrom ||
+      !validUntil
+    ) {
       setError('All fields are required');
       return;
     }
@@ -66,6 +74,8 @@ export default function ArticlesPage() {
       title: title.trim(),
       content: content.trim(),
       tags,
+      validFrom,
+      validUntil,
     };
     setSubmitting(true);
     setError(null);
@@ -75,6 +85,8 @@ export default function ArticlesPage() {
       setTitle('');
       setContent('');
       setTagsInput('');
+      setValidFrom('');
+      setValidUntil('');
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -198,6 +210,28 @@ export default function ArticlesPage() {
                   className="mt-1 w-full rounded bg-slate-700 px-3 py-2 text-sm text-slate-100"
                   value={tagsInput}
                   onChange={(e) => setTagsInput(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-300">
+                  Valid from
+                </label>
+                <input
+                  type="date"
+                  className="mt-1 w-full rounded bg-slate-700 px-3 py-2 text-sm text-slate-100"
+                  value={validFrom}
+                  onChange={(e) => setValidFrom(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-300">
+                  Valid until
+                </label>
+                <input
+                  type="date"
+                  className="mt-1 w-full rounded bg-slate-700 px-3 py-2 text-sm text-slate-100"
+                  value={validUntil}
+                  onChange={(e) => setValidUntil(e.target.value)}
                 />
               </div>
               {error && <div className="text-sm text-red-400">{error}</div>}
