@@ -23,18 +23,17 @@ import {
   getDocs,
   query,
   orderBy,
-  serverTimestamp,
   Timestamp,
   type Firestore,
   //   type DocumentData,
 } from "firebase/firestore";
 import { addDoc } from "firebase/firestore";
-import { z } from "zod";
 import {
   GoogleAuthProvider,
   signInWithPopup,
   type UserCredential,
 } from "firebase/auth";
+import { Article, ArticleSchema } from "@/models/article";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -115,36 +114,7 @@ export function getFirestoreDb(): Firestore {
   return getFirestore(app);
 }
 
-const ArticleSchema = z.object({
-  content: z.string(),
-  tags: z.array(z.string()),
-  title: z.string(),
-  // createdAt/validFrom/validUntil may be Firestore Timestamps or JS Dates; required
-  createdAt: z.any(),
-  validFrom: z.any(),
-  validUntil: z.any(),
-});
 
-const CreateArticleSchema = z.object({
-  content: z.string(),
-  tags: z.array(z.string()),
-  title: z.string(),
-  // createdAt/validFrom/validUntil may be Firestore Timestamps or JS Dates; required
-  createdAt: z.any(),
-  validFrom: z.any(),
-  validUntil: z.any(),
-});
-
-const CreateArticleInputSchema = z.object({
-  content: z.string(),
-  tags: z.array(z.string()),
-  title: z.string(),
-  validFrom: z.string(),
-  validUntil: z.string(),
-});
-
-export type Article = z.infer<typeof ArticleSchema>;
-export type CreateArticleInput = z.infer<typeof CreateArticleInputSchema>;
 
 export type ArticleDoc = { id: string; data: Article };
 
@@ -175,15 +145,13 @@ export async function fetchArticles(): Promise<ArticleDoc[]> {
   }
 }
 
-export async function createArticle(
-  article: CreateArticleInput,
-): Promise<string> {
+export async function createArticle(article: Article): Promise<string> {
   try {
-    const input = CreateArticleInputSchema.parse(article);
+    const newArticle = ArticleSchema.parse(article);
     const db = getFirestoreDb();
     const col = collection(db, "article");
-    const validFromDate = new Date(input.validFrom);
-    const validUntilDate = new Date(input.validUntil);
+    const validFromDate = new Date(newArticle.validFrom);
+    const validUntilDate = new Date(newArticle.validUntil);
 
     if (
       Number.isNaN(validFromDate.getTime()) ||
@@ -198,20 +166,14 @@ export async function createArticle(
     if (validUntil.toMillis() < validFrom.toMillis()) {
       throw new Error("validUntil must be greater than or equal to validFrom");
     }
+    newArticle.validFrom = validFrom;
+    newArticle.validUntil = validUntil;
 
-    const parsed = CreateArticleSchema.parse({
-      title: input.title,
-      content: input.content,
-      tags: input.tags,
-      createdAt: serverTimestamp(),
-      validFrom,
-      validUntil,
+    console.log("Creating article with data", newArticle);
+    const res = await addDoc(col, {
+      ...newArticle,
     });
-    console.log("Creating article with data", parsed);
-    const ref = await addDoc(col, {
-      ...parsed,
-    });
-    return ref.id;
+    return res.id;
   } catch (e) {
     console.error("createArticle error", e);
     throw e;

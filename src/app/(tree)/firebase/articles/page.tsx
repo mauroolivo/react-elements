@@ -5,10 +5,10 @@ import {
   fetchArticles,
   createArticle,
   type ArticleDoc,
-  type Article,
-  type CreateArticleInput,
 } from '../../../../lib/firebase';
 import { useAuthStore } from '../../../../stores/useAuthStore';
+import { serverTimestamp } from 'firebase/firestore';
+import { Article } from '@/models/article';
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<ArticleDoc[] | null>(null);
@@ -70,10 +70,11 @@ export default function ArticlesPage() {
       .split(',')
       .map((t) => t.trim())
       .filter(Boolean);
-    const article: CreateArticleInput = {
+    const article: Article = {
       title: title.trim(),
       content: content.trim(),
       tags,
+      createdAt: serverTimestamp(),
       validFrom,
       validUntil,
     };
