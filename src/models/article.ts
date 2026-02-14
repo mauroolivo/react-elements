@@ -17,9 +17,22 @@ export const ArticleInputSchema = z
     content: z.string().trim().min(1, {
       message: "Content cannot be empty",
     }),
-    tags: z.array(z.string()).min(1, {
-      message: "At least one tag is required",
-    }),
+    tags: z.preprocess(
+      (arg) => {
+        if (typeof arg === "string") {
+          const s = arg.trim();
+          if (s === "") return arg;
+          return s
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean);
+        }
+        return arg;
+      },
+      z.array(z.string()).min(1, {
+        message: "At least one tag is required",
+      }),
+    ),
     title: z.string().trim().min(1, {
       message: "Title cannot be empty",
     }),

@@ -2,22 +2,18 @@
 
 import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { createArticle } from "@/lib/firebase";
 import { serverTimestamp } from "firebase/firestore";
-import { type ArticleInput } from "@/models/article";
+import { ArticleInputSchema, type ArticleInput } from "@/models/article";
 
 type Props = {
   onCancelAction: () => void;
   onCreatedAction?: () => Promise<void> | void;
 };
 
-type FormValues = {
-  title: string;
-  content: string;
-  tagsInput: string;
-  validFrom: string;
-  validUntil: string;
-};
+type FormValues = z.input<typeof ArticleInputSchema>;
 
 export default function ArticleForm({
   onCancelAction,
@@ -31,12 +27,14 @@ export default function ArticleForm({
     reset,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
+    resolver: zodResolver(ArticleInputSchema),
     defaultValues: {
       title: "",
       content: "",
-      tagsInput: "",
+      tags: "",
       validFrom: "",
       validUntil: "",
+      createdAt: serverTimestamp(),
     },
   });
 
@@ -44,15 +42,11 @@ export default function ArticleForm({
 
   async function onSubmit(data: FormValues) {
     setError(null);
-    const tags = data.tagsInput
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean);
 
     const payload: ArticleInput = {
       title: data.title.trim(),
       content: data.content.trim(),
-      tags,
+      tags: data.tags,
       createdAt: serverTimestamp(),
       validFrom: data.validFrom,
       validUntil: data.validUntil,
@@ -108,13 +102,11 @@ export default function ArticleForm({
               Tags (comma separated)
             </label>
             <input
-              {...register("tagsInput")}
+              {...register("tags")}
               className="mt-1 w-full rounded bg-slate-700 px-3 py-2 text-sm text-slate-100"
             />
-            {errors.tagsInput && (
-              <div className="text-xs text-red-400">
-                {errors.tagsInput.message}
-              </div>
+            {errors.tags && (
+              <div className="text-xs text-red-400">{errors.tags.message}</div>
             )}
           </div>
 
