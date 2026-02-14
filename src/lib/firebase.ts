@@ -23,9 +23,7 @@ import {
   getDocs,
   query,
   orderBy,
-  Timestamp,
   type Firestore,
-  //   type DocumentData,
 } from "firebase/firestore";
 import { addDoc } from "firebase/firestore";
 import {
@@ -33,7 +31,12 @@ import {
   signInWithPopup,
   type UserCredential,
 } from "firebase/auth";
-import { Article, ArticleInput, ArticleInputSchema, ArticleSchema } from "@/models/article";
+import {
+  Article,
+  ArticleInput,
+  ArticleInputSchema,
+  ArticleSchema,
+} from "../models/article";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -72,9 +75,6 @@ export function getFirebaseAnalytics() {
 
 export function getFirebaseRemoteConfig(): RemoteConfig {
   if (typeof window === "undefined") {
-    throw new Error(
-      "Remote Config can only be used in the browser (client-side)",
-    );
   }
 
   const app = getFirebaseApp();
@@ -114,8 +114,6 @@ export function getFirestoreDb(): Firestore {
   return getFirestore(app);
 }
 
-
-
 export type ArticleDoc = { id: string; data: Article };
 
 export async function fetchArticles(): Promise<ArticleDoc[]> {
@@ -137,7 +135,6 @@ export async function fetchArticles(): Promise<ArticleDoc[]> {
         );
       }
     });
-    console.log(`Fetched ${out} articles`);
     return out;
   } catch (e) {
     console.error("fetchArticles error", e);
@@ -147,32 +144,12 @@ export async function fetchArticles(): Promise<ArticleDoc[]> {
 
 export async function createArticle(input: ArticleInput): Promise<string> {
   try {
-    const newArticle = ArticleInputSchema.parse(input);
+    const parsed = ArticleInputSchema.parse(input);
     const db = getFirestoreDb();
     const col = collection(db, "article");
-    const validFromDate = new Date(input.validFrom);
-    const validUntilDate = new Date(input.validUntil);
 
-    if (
-      Number.isNaN(validFromDate.getTime()) ||
-      Number.isNaN(validUntilDate.getTime())
-    ) {
-      throw new Error("Invalid validFrom or validUntil date");
-    }
-
-    const validFrom = Timestamp.fromDate(validFromDate);
-    const validUntil = Timestamp.fromDate(validUntilDate);
-
-    if (validUntil.toMillis() < validFrom.toMillis()) {
-      throw new Error("validUntil must be greater than or equal to validFrom");
-    }
-    newArticle.validFrom = validFrom;
-    newArticle.validUntil = validUntil;
-
-    console.log("Creating article with data", newArticle);
-    const res = await addDoc(col, {
-      ...newArticle,
-    });
+    console.log("Creating article with data", parsed);
+    const res = await addDoc(col, parsed);
     return res.id;
   } catch (e) {
     console.error("createArticle error", e);

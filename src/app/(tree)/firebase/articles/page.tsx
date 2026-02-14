@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { fetchArticles, type ArticleDoc } from '../../../../lib/firebase';
 import { useAuthStore } from '../../../../stores/useAuthStore';
 import ArticleForm from '@/components/ArticleForm';
-import { Article } from '@/models/article';
+import { type Article } from '@/models/article';
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<ArticleDoc[] | null>(null);
