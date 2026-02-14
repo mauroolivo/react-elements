@@ -1,14 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  fetchArticles,
-  createArticle,
-  type ArticleDoc,
-} from '../../../../lib/firebase';
+import { fetchArticles, type ArticleDoc } from '../../../../lib/firebase';
 import { useAuthStore } from '../../../../stores/useAuthStore';
-import { serverTimestamp } from 'firebase/firestore';
-import { Article, ArticleInput } from '@/models/article';
+import ArticleForm from '@/components/ArticleForm';
+import { Article } from '@/models/article';
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<ArticleDoc[] | null>(null);
@@ -17,12 +13,6 @@ export default function ArticlesPage() {
   const user = useAuthStore((s) => s.user);
 
   const [showCreate, setShowCreate] = useState(false);
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [tagsInput, setTagsInput] = useState('');
-  const [validFrom, setValidFrom] = useState('');
-  const [validUntil, setValidUntil] = useState('');
-  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -51,48 +41,6 @@ export default function ArticlesPage() {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function handleCreate(e?: React.FormEvent) {
-    e?.preventDefault();
-    if (
-      !title.trim() ||
-      !content.trim() ||
-      !tagsInput.trim() ||
-      !validFrom ||
-      !validUntil
-    ) {
-      setError('All fields are required');
-      return;
-    }
-    const tags = tagsInput
-      .split(',')
-      .map((t) => t.trim())
-      .filter(Boolean);
-    const article: ArticleInput = {
-      title: title.trim(),
-      content: content.trim(),
-      tags,
-      createdAt: serverTimestamp(),
-      validFrom,
-      validUntil,
-    };
-    setSubmitting(true);
-    setError(null);
-    try {
-      await createArticle(article);
-      setShowCreate(false);
-      setTitle('');
-      setContent('');
-      setTagsInput('');
-      setValidFrom('');
-      setValidUntil('');
-      await refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setSubmitting(false);
     }
   }
 
@@ -182,79 +130,13 @@ export default function ArticlesPage() {
         </section>
       </div>
       {showCreate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-xl rounded bg-gray-800 p-6">
-            <h2 className="text-lg font-semibold">Create Article</h2>
-            <form className="mt-4 space-y-3" onSubmit={handleCreate}>
-              <div>
-                <label className="block text-sm text-gray-300">Title</label>
-                <input
-                  className="mt-1 w-full rounded bg-slate-700 px-3 py-2 text-sm text-slate-100"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-300">Content</label>
-                <textarea
-                  className="mt-1 w-full rounded bg-slate-700 px-3 py-2 text-sm text-slate-100"
-                  rows={6}
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-300">
-                  Tags (comma separated)
-                </label>
-                <input
-                  className="mt-1 w-full rounded bg-slate-700 px-3 py-2 text-sm text-slate-100"
-                  value={tagsInput}
-                  onChange={(e) => setTagsInput(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-300">
-                  Valid from
-                </label>
-                <input
-                  type="date"
-                  className="mt-1 w-full rounded bg-slate-700 px-3 py-2 text-sm text-slate-100"
-                  value={validFrom}
-                  onChange={(e) => setValidFrom(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-300">
-                  Valid until
-                </label>
-                <input
-                  type="date"
-                  className="mt-1 w-full rounded bg-slate-700 px-3 py-2 text-sm text-slate-100"
-                  value={validUntil}
-                  onChange={(e) => setValidUntil(e.target.value)}
-                />
-              </div>
-              {error && <div className="text-sm text-red-400">{error}</div>}
-              <div className="mt-4 flex items-center gap-3">
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="rounded bg-green-600 px-3 py-1 text-sm font-medium hover:bg-green-500 disabled:opacity-60"
-                >
-                  {submitting ? 'Creating...' : 'Create'}
-                </button>
-                <button
-                  type="button"
-                  className="rounded bg-gray-600 px-3 py-1 text-sm hover:bg-gray-500"
-                  onClick={() => setShowCreate(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <ArticleForm
+          onCancelAction={() => setShowCreate(false)}
+          onCreatedAction={async () => {
+            setShowCreate(false);
+            await refresh();
+          }}
+        />
       )}
     </div>
   );
