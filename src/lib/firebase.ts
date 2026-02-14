@@ -33,7 +33,7 @@ import {
   signInWithPopup,
   type UserCredential,
 } from "firebase/auth";
-import { Article, ArticleSchema } from "@/models/article";
+import { Article, ArticleInput, ArticleInputSchema, ArticleSchema } from "@/models/article";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -145,13 +145,13 @@ export async function fetchArticles(): Promise<ArticleDoc[]> {
   }
 }
 
-export async function createArticle(article: Article): Promise<string> {
+export async function createArticle(input: ArticleInput): Promise<string> {
   try {
-    const newArticle = ArticleSchema.parse(article);
+    const newArticle = ArticleInputSchema.parse(input);
     const db = getFirestoreDb();
     const col = collection(db, "article");
-    const validFromDate = new Date(newArticle.validFrom);
-    const validUntilDate = new Date(newArticle.validUntil);
+    const validFromDate = new Date(input.validFrom);
+    const validUntilDate = new Date(input.validUntil);
 
     if (
       Number.isNaN(validFromDate.getTime()) ||

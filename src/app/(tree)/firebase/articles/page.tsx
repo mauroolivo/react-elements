@@ -8,7 +8,7 @@ import {
 } from '../../../../lib/firebase';
 import { useAuthStore } from '../../../../stores/useAuthStore';
 import { serverTimestamp } from 'firebase/firestore';
-import { Article } from '@/models/article';
+import { Article, ArticleInput } from '@/models/article';
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<ArticleDoc[] | null>(null);
@@ -70,7 +70,7 @@ export default function ArticlesPage() {
       .split(',')
       .map((t) => t.trim())
       .filter(Boolean);
-    const article: Article = {
+    const article: ArticleInput = {
       title: title.trim(),
       content: content.trim(),
       tags,

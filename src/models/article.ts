@@ -1,6 +1,18 @@
 import { z } from "zod";
+import { Timestamp } from "firebase/firestore";
 
 export const ArticleSchema = z.object({
+  content: z.string(),
+  tags: z.array(z.string()),
+  title: z.string(),
+  createdAt: z.instanceof(Timestamp),
+  validFrom: z.instanceof(Timestamp),
+  validUntil: z.instanceof(Timestamp),
+});
+
+export type Article = z.infer<typeof ArticleSchema>;
+
+export const ArticleInputSchema = z.object({
   content: z.string().trim().min(1, {
     message: "Content cannot be empty",
   }),
@@ -15,4 +27,4 @@ export const ArticleSchema = z.object({
   validUntil: z.any(),
 });
 
-export type Article = z.infer<typeof ArticleSchema>;
+export type ArticleInput = z.infer<typeof ArticleInputSchema>;
