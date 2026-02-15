@@ -21,6 +21,20 @@ export default function ArticleForm({
 }: Props) {
   const formRef = useRef<HTMLFormElement>(null);
 
+  const getLocalDateString = (d: Date) => {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const validFromDefault = getLocalDateString(today);
+  const validUntilDate = new Date(today);
+  validUntilDate.setMonth(validUntilDate.getMonth() + 1);
+  const validUntilDefault = getLocalDateString(validUntilDate);
+
   const {
     handleSubmit,
     register,
@@ -32,8 +46,8 @@ export default function ArticleForm({
       title: "",
       content: "",
       tags: "",
-      validFrom: "",
-      validUntil: "",
+      validFrom: validFromDefault,
+      validUntil: validUntilDefault,
       createdAt: serverTimestamp(),
     },
   });
