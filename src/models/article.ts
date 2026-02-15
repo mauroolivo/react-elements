@@ -21,7 +21,9 @@ export const ArticleInputSchema = z
       (arg) => {
         if (typeof arg === "string") {
           const s = arg.trim();
-          if (s === "") return arg;
+          if (s === "") {
+            return [];
+          }
           return s
             .split(",")
             .map((t) => t.trim())
