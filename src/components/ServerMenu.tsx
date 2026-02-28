@@ -21,6 +21,12 @@ export default function ServerMenu() {
           Intro
         </Link>
         <Link
+          href="/extensions"
+          className="block rounded px-2 py-1 hover:bg-slate-700"
+        >
+          Extensions
+        </Link>
+        <Link
           href="/admin"
           className="block rounded px-2 py-1 hover:bg-slate-700"
         >
