@@ -1,7 +1,19 @@
 import { useEffect, useRef } from "react";
 
+/**
+ * Tuple-like coordinate representation used for cursor positions.
+ */
 type Point = [number, number] | number[];
 
+/**
+ * Creates a smooth cursor movement handler.
+ *
+ * Each received point becomes a target that is interpolated with
+ * `requestAnimationFrame` and forwarded to `callback`.
+ *
+ * @param callback Function called with interpolated cursor coordinates.
+ * @returns A function that accepts target cursor coordinates.
+ */
 export function usePerfectCursor(callback: (p: Point) => void) {
   const target = useRef<Point | null>(null);
   const rafId = useRef<number | null>(null);
@@ -21,7 +33,7 @@ export function usePerfectCursor(callback: (p: Point) => void) {
     current.current = [nx, ny];
     try {
       callback([nx, ny]);
-    } catch (e) {
+    } catch {
       // ignore callback errors
     }
 
@@ -29,7 +41,7 @@ export function usePerfectCursor(callback: (p: Point) => void) {
       current.current = [tx, ty];
       try {
         callback([tx, ty]);
-      } catch (e) {}
+      } catch {}
       target.current = null;
       rafId.current = null;
       return;

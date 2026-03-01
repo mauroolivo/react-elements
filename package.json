@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "docs:api": "typedoc",
+    "docs:api:watch": "typedoc --watch",
     "ws:build": "tsc -p tsconfig.server.json",
     "ws:start": "node dist/web-socket/server1.js",
     "ws:dev": "tsx src/web-socket/server1.ts",
@@ -52,6 +54,7 @@
     "prettier-plugin-tailwindcss": "^0.7.1",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
+    "typedoc": "^0.28.17",
     "typescript": "^5"
   }
 }

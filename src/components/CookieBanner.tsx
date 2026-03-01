@@ -1,18 +1,23 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 const STORAGE_KEY = "cookie_consent";
 
 export default function CookieBanner() {
-  const [visible, setVisible] = useState(() => {
+  const [visible, setVisible] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
     try {
       const v = localStorage.getItem(STORAGE_KEY);
-      return !v;
+      setVisible(!v);
     } catch {
-      return true;
+      setVisible(true);
+    } finally {
+      setReady(true);
     }
-  });
+  }, []);
 
   function acceptAll() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ mode: "all" }));
@@ -24,7 +29,7 @@ export default function CookieBanner() {
     setVisible(false);
   }
 
-  if (!visible) return null;
+  if (!ready || !visible) return null;
 
   return (
     <div className="fixed left-4 right-4 bottom-4 z-50">
